@@ -1,0 +1,26 @@
+create database oz_order;
+
+CREATE TABLE orders (
+  orderID INT AUTO_INCREMENT,
+  customerPO VARCHAR(50),
+  onfCO VARCHAR(50),
+  date DATE,
+  customerName VARCHAR(50),
+  basecode VARCHAR(50),
+  width FLOAT(2),
+  length FLOAT(2),
+  bundleNo VARCHAR(50),
+  rollNo INT,
+  area FLOAT(2),
+  netWeight FLOAT(2),
+  remarks VARCHAR(100),
+  PRIMARY KEY(orderID)
+);
+
+INSERT INTO orders (customerPO, onfCO, date, customerName, basecode, width, length, bundleNo,
+rollNo, area, netWeight, remarks)
+VALUES ('123abc', '123abc', '2012-01-01', '123abc', '123abc', 11, 11, '123abc', 11, 11, 11, '123abc');
+
+INSERT INTO orders (customerPO, onfCO, date, customerName, basecode, width, length, bundleNo,
+rollNo, area, netWeight, remarks)
+VALUES ('123bcd', '123bcd', '2012-01-01', '123bcd', '123bcd', 12, 12, '123bcd', 12, 12, 12, '123bcd');

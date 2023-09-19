@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.oz.ozorder.mapper.OrderMapper">
+    <select id="retrieveOrders" parameterType="java.util.HashMap" resultType="com.oz.ozorder.entity.Order">
+        SELECT
+            o.*
+        FROM
+            orders o
+        WHERE 1=1
+        <if test="customerPO != null">
+            AND customerPO=#{customerPO}
+        </if>
+        <if test="onfCO != null">
+            AND onfCO=#{onfCO}
+        </if>
+        <if test="customerName != null">
+            AND customerName=#{customerName}
+        </if>
+        <if test="date != null">
+            AND date=#{date}
+        </if>
+    </select>
+
+    <insert id="insertOrder" parameterType="com.oz.ozorder.entity.Order">
+        INSERT INTO orders (customerPO, onfCO, date, customerName, basecode, width, length,
+                            bundleNo, rollNo, area, netWeight, remarks)
+        VALUES (#{customerPO}, #{onfCO}, #{date}, #{customerName}, #{basecode}, #{width},
+                #{length}, #{bundleNo}, #{rollNo}, #{area}, #{netWeight}, #{remarks})
+    </insert>
+    
+    <delete id="deleteAll" parameterType="java.lang.Void">
+        DELETE
+        FROM
+             orders
+    </delete>
+</mapper>

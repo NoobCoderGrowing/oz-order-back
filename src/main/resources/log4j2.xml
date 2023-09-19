@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="INFO" name="MyApp">
+
+    <Properties>
+        <property name="LOG_FILE">/opt/oz/log</property>
+    </Properties>
+
+    <Appenders>
+        <Console name="Console" target="SYSTEM_OUT">
+            <ThresholdFilter level="trace" onMatch="ACCEPT" onMismatch="DENY"/>
+            <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss.SSS} [%traceId] [%thread] %-5level %class{36} %L %M - %msg%xEx%n"/>
+        </Console>
+
+        <!-- Info Level Rolling File Appender -->
+        <RollingFile name="InfoRollingFile" fileName="${LOG_FILE}/info.log"
+                     filePattern="${LOG_FILE}/info-%d{MM-dd-yyyy}-%i.log">
+            <ThresholdFilter level="info" onMatch="ACCEPT" onMismatch="DENY"/>
+            <PatternLayout pattern="%d [%t] %-5p %c{1} - %m%n" />
+            <Policies>
+                <SizeBasedTriggeringPolicy size="10 MB" />
+            </Policies>
+            <DefaultRolloverStrategy max="10" />
+        </RollingFile>
+
+        <!-- Error Level Rolling File Appender -->
+        <RollingFile name="ErrorRollingFile" fileName="${LOG_FILE}/error.log"
+                     filePattern="${LOG_FILE}/error-%d{MM-dd-yyyy}-%i.log">
+            <ThresholdFilter level="error" onMatch="ACCEPT" onMismatch="DENY"/>
+            <PatternLayout pattern="%d [%t] %-5p %c{1} - %m%n" />
+            <Policies>
+                <SizeBasedTriggeringPolicy size="10 MB" />
+            </Policies>
+            <DefaultRolloverStrategy max="10" />
+        </RollingFile>
+    </Appenders>
+
+    <Loggers>
+        <!-- Info Level Logger -->
+        <Logger name="InfoLogger" level="info" additivity="false">
+            <AppenderRef ref="Console" />
+            <AppenderRef ref="InfoRollingFile" />
+        </Logger>
+
+        <!-- Error Level Logger -->
+        <Logger name="ErrorLogger" level="error" additivity="false">
+            <AppenderRef ref="Console" />
+            <AppenderRef ref="ErrorRollingFile" />
+        </Logger>
+
+        <!-- Root Logger -->
+        <Root level="info">
+            <AppenderRef ref="Console" />
+            <AppenderRef ref="InfoRollingFile" />
+            <AppenderRef ref="ErrorRollingFile" />
+        </Root>
+    </Loggers>
+</Configuration>
