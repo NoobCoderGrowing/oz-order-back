@@ -2,16 +2,12 @@ package com.oz.ozorder.service;
 import com.alibaba.fastjson2.JSONObject;
 import com.oz.ozorder.entity.Order;
 import com.oz.ozorder.mapper.OrderMapper;
-import lombok.extern.log4j.Log4j;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
-import org.apache.ibatis.transaction.Transaction;
-import org.apache.ibatis.transaction.jdbc.JdbcTransactionFactory;
+import org.apache.ibatis.session.TransactionIsolationLevel;
 import org.springframework.stereotype.Service;
-
-
 import javax.annotation.Resource;
 import java.sql.Date;
 import java.sql.SQLException;
@@ -52,15 +48,15 @@ public class OrderService {
         }
         SqlSession session = sqlSessionFactory.openSession();
         OrderMapper orderMapper = session.getMapper(OrderMapper.class);
-//        List<Order> result = session.selectList("retrieveOrders", params);
         List<Order> result = orderMapper.retrieveOrders(params);
         session.close();
         return result;
     }
 
+    // set transaction level to repeatable read
     public Boolean insertOrders(final List<Map<String,String>> orders) throws SQLException {
         SqlSession session = sqlSessionFactory.openSession();
-        Transaction transaction = new JdbcTransactionFactory().newTransaction(session.getConnection());
+        session.getConnection().setTransactionIsolation(TransactionIsolationLevel.REPEATABLE_READ.getLevel());
         OrderMapper orderMapper = session.getMapper(OrderMapper.class);
         try {
             for (int i = 0; i < orders.size(); i++) {
@@ -68,10 +64,10 @@ public class OrderService {
                 Order order = JSONObject.parseObject(JSONObject.toJSONString(orderInfo),Order.class);
                 orderMapper.insertOrder(order);
             }
-            transaction.commit();
+            session.commit();
             session.close();
         }catch (Exception e){
-            transaction.rollback();
+            session.rollback();
             log.info("rollback with params: " + JSONObject.toJSONString(orders));
             e.printStackTrace();
             session.close();
@@ -80,8 +76,16 @@ public class OrderService {
         return true;
     }
 
+    // set transaction level to repeatable read
     public void deleteALL(){
         SqlSession session = sqlSessionFactory.openSession();
+        try {
+            session.getConnection().setTransactionIsolation(TransactionIsolationLevel.REPEATABLE_READ.getLevel());
+        } catch (SQLException throwables) {
+            session.close();
+            throwables.printStackTrace();
+            return;
+        }
         OrderMapper orderMapper = session.getMapper(OrderMapper.class);
         orderMapper.deleteAll();
         session.commit();

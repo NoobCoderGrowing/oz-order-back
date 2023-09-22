@@ -13,7 +13,6 @@ import java.io.InputStream;
 
 @Configuration
 public class SqlConfig {
-
     @Bean
     public SqlSessionFactory initSqlSessionFactory(){
         SqlSessionFactory sqlSessionFactory = null;
